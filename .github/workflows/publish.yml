@@ -1,4 +1,9 @@
-name: Publish
+name: Stage publish
+
+# Stages the tagged version on npm via trusted publishing (OIDC). Staging does
+# not make the version public: a maintainer approves it with 2FA
+# (`npm stage list` / `npm stage approve <stage-id>`) and cuts the GitHub
+# Release by hand.
 
 on:
   push:
@@ -9,11 +14,11 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  publish:
+  stage:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # Required for OIDC
-      contents: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v6
@@ -24,16 +29,14 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false # never use caching in release builds
 
+      # `npm stage` needs npm >= 11.21; the version bundled with Node may be older.
+      - run: npm install -g npm@11.21.1
+
       - run: npm ci
 
       - run: npm run typecheck
 
       - run: npm test
 
-      - run: npm publish
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          name: ${{ github.ref_name }}
-          generate_release_notes: true
+      # Runs prepublishOnly (clean-tree check, typecheck, tests, build) first.
+      - run: npm stage publish
