@@ -1,6 +1,6 @@
 {
   "name": "@trailofdad/morphkit-calculator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Ball python breeding calculator built on morphkit: parent selection, zygosity, folded outcomes and morph labels.",
   "type": "module",
   "main": "./dist/index.cjs",
