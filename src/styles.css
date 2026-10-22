@@ -1,0 +1,626 @@
+/*
+ * @trailofdad/morphkit-calculator — optional default theme.
+ *
+ * Every component carries `mkc-*` classes; this file styles them. Theme it by
+ * overriding the `--mkc-*` variables on any ancestor, or skip this file and
+ * style the classes / `classNames` slots yourself.
+ *
+ * Chips are tinted by INHERITANCE (data-inheritance), not by trait: the label
+ * already names the trait, the colour says whether the gene needs two copies.
+ */
+
+:root {
+  --mkc-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mkc-radius: 12px;
+  --mkc-radius-sm: 8px;
+  --mkc-gap: 16px;
+
+  --mkc-bg: #ffffff;
+  --mkc-surface: #ffffff;
+  --mkc-surface-muted: #f6f6f4;
+  --mkc-border: #e2e2dd;
+  --mkc-text: #1c1c1a;
+  --mkc-text-muted: #66665f;
+  --mkc-accent: oklch(0.55 0.13 160);
+  --mkc-accent-contrast: #ffffff;
+  --mkc-focus: oklch(0.6 0.15 250);
+
+  --mkc-danger-bg: oklch(0.95 0.04 25);
+  --mkc-danger-text: oklch(0.45 0.16 25);
+  --mkc-warning-bg: oklch(0.96 0.06 85);
+  --mkc-warning-text: oklch(0.45 0.1 70);
+
+  --mkc-male: oklch(0.55 0.13 245);
+  --mkc-female: oklch(0.58 0.15 350);
+
+  /* Chip tints by inheritance: background / ink / tag background. */
+  --mkc-recessive-bg: oklch(0.93 0.04 312);
+  --mkc-recessive-ink: oklch(0.42 0.13 312);
+  --mkc-recessive-tag: oklch(0.86 0.07 312);
+  --mkc-incdom-bg: oklch(0.93 0.035 196);
+  --mkc-incdom-ink: oklch(0.42 0.09 196);
+  --mkc-incdom-tag: oklch(0.86 0.06 196);
+  --mkc-dominant-bg: oklch(0.93 0.045 122);
+  --mkc-dominant-ink: oklch(0.42 0.1 122);
+  --mkc-dominant-tag: oklch(0.86 0.08 122);
+  --mkc-unknown-bg: #ececea;
+  --mkc-unknown-ink: #3b3b37;
+  --mkc-unknown-tag: #d8d8d4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --mkc-bg: #141413;
+    --mkc-surface: #1d1d1b;
+    --mkc-surface-muted: #232321;
+    --mkc-border: #34342f;
+    --mkc-text: #ededea;
+    --mkc-text-muted: #a3a39b;
+    --mkc-accent: oklch(0.72 0.13 160);
+    --mkc-accent-contrast: #10100f;
+    --mkc-danger-bg: oklch(0.3 0.07 25);
+    --mkc-danger-text: oklch(0.85 0.08 25);
+    --mkc-warning-bg: oklch(0.32 0.06 85);
+    --mkc-warning-text: oklch(0.88 0.09 85);
+    --mkc-male: oklch(0.72 0.12 245);
+    --mkc-female: oklch(0.74 0.13 350);
+    --mkc-recessive-bg: oklch(0.32 0.06 312);
+    --mkc-recessive-ink: oklch(0.88 0.07 312);
+    --mkc-recessive-tag: oklch(0.42 0.09 312);
+    --mkc-incdom-bg: oklch(0.32 0.05 196);
+    --mkc-incdom-ink: oklch(0.88 0.06 196);
+    --mkc-incdom-tag: oklch(0.42 0.07 196);
+    --mkc-dominant-bg: oklch(0.32 0.06 122);
+    --mkc-dominant-ink: oklch(0.88 0.08 122);
+    --mkc-dominant-tag: oklch(0.42 0.08 122);
+    --mkc-unknown-bg: #2e2e2b;
+    --mkc-unknown-ink: #dcdcd7;
+    --mkc-unknown-tag: #45453f;
+  }
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+
+.mkc-root {
+  font-family: var(--mkc-font);
+  color: var(--mkc-text);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--mkc-gap) * 1.5);
+  line-height: 1.4;
+}
+
+.mkc-root *,
+.mkc-root *::before,
+.mkc-root *::after {
+  box-sizing: border-box;
+}
+
+.mkc-title {
+  margin: 0;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.mkc-description {
+  margin: 4px 0 0;
+  color: var(--mkc-text-muted);
+}
+
+.mkc-parents {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--mkc-gap);
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .mkc-parents {
+    grid-template-columns: 1fr auto 1fr;
+  }
+  .mkc-swap {
+    margin-top: 12px;
+  }
+}
+
+.mkc-swap {
+  justify-self: center;
+}
+
+/* ── Panels ─────────────────────────────────────────────────────────────── */
+
+.mkc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--mkc-gap);
+  border: 1px solid var(--mkc-border);
+  border-radius: calc(var(--mkc-radius) + 4px);
+  background: var(--mkc-surface-muted);
+  min-width: 0;
+}
+
+.mkc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mkc-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.mkc-panel-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.mkc-panel[data-parent='sire'] .mkc-panel-symbol {
+  background: var(--mkc-male);
+}
+
+.mkc-panel[data-parent='dam'] .mkc-panel-symbol {
+  background: var(--mkc-female);
+}
+
+/* ── Trait picker ───────────────────────────────────────────────────────── */
+
+.mkc-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mkc-picker-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.mkc-picker-count,
+.mkc-muted {
+  color: var(--mkc-text-muted);
+  font-weight: 400;
+}
+
+.mkc-picker-search {
+  position: relative;
+}
+
+.mkc-picker-input,
+.mkc-select {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  background: var(--mkc-surface);
+  border: 1px solid var(--mkc-border);
+  border-radius: var(--mkc-radius);
+}
+
+.mkc-picker-input {
+  height: 44px;
+  padding: 0 14px;
+  font-size: 1rem;
+}
+
+.mkc-select {
+  width: auto;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.mkc-picker-listbox {
+  position: absolute;
+  z-index: 10;
+  inset: calc(100% + 4px) 0 auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--mkc-surface);
+  border: 1px solid var(--mkc-border);
+  border-radius: var(--mkc-radius);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+.mkc-picker-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--mkc-radius-sm);
+  cursor: pointer;
+}
+
+.mkc-picker-option[aria-selected='true'] {
+  background: var(--mkc-surface-muted);
+}
+
+.mkc-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mkc-picker-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--mkc-surface);
+  border: 1px solid var(--mkc-border);
+  border-left-width: 4px;
+  border-radius: var(--mkc-radius);
+}
+
+.mkc-picker-item[data-inheritance='recessive'] {
+  border-left-color: var(--mkc-recessive-ink);
+}
+.mkc-picker-item[data-inheritance='incomplete_dominant'] {
+  border-left-color: var(--mkc-incdom-ink);
+}
+.mkc-picker-item[data-inheritance='dominant'] {
+  border-left-color: var(--mkc-dominant-ink);
+}
+
+.mkc-picker-item-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mkc-picker-item-name {
+  font-weight: 700;
+}
+
+.mkc-note {
+  font-size: 0.8rem;
+  color: var(--mkc-text-muted);
+}
+
+/* ── Controls ───────────────────────────────────────────────────────────── */
+
+.mkc-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  padding: 2px;
+  gap: 2px;
+  background: var(--mkc-surface-muted);
+  border: 1px solid var(--mkc-border);
+  border-radius: var(--mkc-radius-sm);
+}
+
+.mkc-segment {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--mkc-text-muted);
+  border-radius: calc(var(--mkc-radius-sm) - 2px);
+  cursor: pointer;
+}
+
+.mkc-segment[data-checked] {
+  color: var(--mkc-text);
+  background: var(--mkc-surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.mkc-segment:has(:focus-visible),
+.mkc-picker-input:focus-visible,
+.mkc-select:focus-visible,
+.mkc-button:focus-visible,
+.mkc-icon-button:focus-visible,
+.mkc-text-button:focus-visible {
+  outline: 2px solid var(--mkc-focus);
+  outline-offset: 2px;
+}
+
+.mkc-button,
+.mkc-icon-button,
+.mkc-text-button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.mkc-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 12px;
+  font-weight: 600;
+  background: var(--mkc-surface);
+  border: 1px solid var(--mkc-border);
+  border-radius: var(--mkc-radius);
+}
+
+.mkc-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.mkc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--mkc-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--mkc-radius-sm);
+}
+
+.mkc-icon-button:hover {
+  color: var(--mkc-text);
+  background: var(--mkc-surface-muted);
+}
+
+.mkc-text-button {
+  align-self: flex-start;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mkc-text-muted);
+  background: none;
+  border: none;
+}
+
+.mkc-text-button:hover {
+  color: var(--mkc-text);
+}
+
+.mkc-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── Messages ───────────────────────────────────────────────────────────── */
+
+.mkc-empty,
+.mkc-loading {
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--mkc-text-muted);
+  border: 1px dashed var(--mkc-border);
+  border-radius: var(--mkc-radius);
+}
+
+.mkc-error,
+.mkc-warning {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  border-radius: var(--mkc-radius);
+}
+
+.mkc-error {
+  color: var(--mkc-danger-text);
+  background: var(--mkc-danger-bg);
+}
+
+.mkc-warning {
+  color: var(--mkc-warning-text);
+  background: var(--mkc-warning-bg);
+}
+
+/* ── Chips ──────────────────────────────────────────────────────────────── */
+
+.mkc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mkc-chip {
+  --_bg: var(--mkc-unknown-bg);
+  --_ink: var(--mkc-unknown-ink);
+  --_tag: var(--mkc-unknown-tag);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--_ink);
+  background: var(--_bg);
+  border-radius: var(--mkc-radius-sm);
+}
+
+.mkc-chip[data-inheritance='recessive'] {
+  --_bg: var(--mkc-recessive-bg);
+  --_ink: var(--mkc-recessive-ink);
+  --_tag: var(--mkc-recessive-tag);
+}
+.mkc-chip[data-inheritance='incomplete_dominant'] {
+  --_bg: var(--mkc-incdom-bg);
+  --_ink: var(--mkc-incdom-ink);
+  --_tag: var(--mkc-incdom-tag);
+}
+.mkc-chip[data-inheritance='dominant'] {
+  --_bg: var(--mkc-dominant-bg);
+  --_ink: var(--mkc-dominant-ink);
+  --_tag: var(--mkc-dominant-tag);
+}
+
+.mkc-chip[title] {
+  cursor: help;
+}
+
+.mkc-chip-tag {
+  padding: 0 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--_tag);
+  border-radius: 4px;
+}
+
+/* ── Results ────────────────────────────────────────────────────────────── */
+
+.mkc-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mkc-results-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.mkc-results-title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.mkc-results-count {
+  font-size: 0.85rem;
+  color: var(--mkc-text-muted);
+}
+
+.mkc-outcomes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mkc-outcome {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--mkc-surface);
+  border: 1px solid var(--mkc-border);
+  border-radius: var(--mkc-radius);
+}
+
+.mkc-outcome[data-lethal] {
+  border-color: var(--mkc-danger-text);
+}
+
+.mkc-outcome-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mkc-outcome-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  min-width: 0;
+}
+
+.mkc-outcome-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mkc-outcome-group-label,
+.mkc-outcome-normal {
+  font-size: 0.8rem;
+  color: var(--mkc-text-muted);
+}
+
+.mkc-outcome-normal {
+  font-weight: 600;
+}
+
+.mkc-outcome-meta {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.mkc-outcome-sex {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.mkc-outcome-sex[data-sex='male'] {
+  color: var(--mkc-male);
+}
+
+.mkc-outcome-sex[data-sex='female'] {
+  color: var(--mkc-female);
+}
+
+.mkc-probability {
+  flex: none;
+  padding: 2px 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--mkc-surface-muted);
+  border-radius: 999px;
+}
+
+.mkc-badges,
+.mkc-outcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.mkc-badge {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--mkc-border);
+  border-radius: 999px;
+}
+
+.mkc-badge-lethal {
+  color: var(--mkc-danger-text);
+  background: var(--mkc-danger-bg);
+  border-color: transparent;
+}
+
+.mkc-badge-warning {
+  color: var(--mkc-warning-text);
+  background: var(--mkc-warning-bg);
+  border-color: transparent;
+}

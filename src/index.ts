@@ -32,8 +32,8 @@ export {
 } from './core/labels';
 export type { InheritanceClass, MorphTag, ShortName } from './core/labels';
 
-export { buildAlleleList } from './core/alleles';
-export type { AlleleSuggestion } from './core/alleles';
+export { buildAlleleList, searchAlleles } from './core/alleles';
+export type { AlleleSuggestion, SearchAllelesOptions } from './core/alleles';
 
 export {
   DEFAULT_POS_HET_PROBABILITY,

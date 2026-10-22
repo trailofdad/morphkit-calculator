@@ -16,7 +16,12 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@trailofdad/morphkit-calculator": ["./src/index.ts"],
+      "@trailofdad/morphkit-calculator/react": ["./src/react/index.ts"]
+    },
     "types": ["node"]
   },
-  "include": ["src", "tests", "tsup.config.ts", "vitest.config.ts"]
+  "include": ["src", "tests", "playground", "tsup.config.ts", "vitest.config.ts"]
 }

@@ -28,6 +28,14 @@ describe('morphTag', () => {
     it('tags the homozygous form as SUPER', () => {
       expect(morphTag(homozygous('Pastel'), 'incomplete_dominant')).toBe('SUPER');
     });
+
+    it('never tags a compound of two different alleles as SUPER', () => {
+      const freeway: LocusInput = {
+        locusId: 'yellowbelly_complex',
+        alleles: ['yellowbelly', 'asphalt'],
+      };
+      expect(morphTag(freeway, 'incomplete_dominant')).toBeNull();
+    });
   });
 
   describe('dominant / polygenic', () => {

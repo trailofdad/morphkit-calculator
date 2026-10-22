@@ -1,14 +1,12 @@
-import { readFileSync } from 'node:fs';
 import type { MorphkitDictionary } from '@trailofdad/morphkit';
 import type { ParentState, SelectionTrait } from '../src';
+import realDictionary from './fixtures/dictionary.v4.0.0.json';
 
 /**
  * The real morphkit-dictionary v4.0.0, pinned so results never change under the
  * tests. Refresh deliberately alongside DEFAULT_DICTIONARY_VERSION.
  */
-export const REAL_DICT = JSON.parse(
-  readFileSync(new URL('./fixtures/dictionary.v4.0.0.json', import.meta.url), 'utf8'),
-) as MorphkitDictionary;
+export const REAL_DICT = realDictionary as unknown as MorphkitDictionary;
 
 /**
  * Minimal dictionary: one incomplete-dominant locus (Pastel) and two recessives

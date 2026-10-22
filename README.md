@@ -11,7 +11,7 @@ morphkit does the genetics: Punnett squares, sex linkage, combos, lethals. This 
 - labels, combo descriptions and short names
 - a framework-free state reducer
 
-The core has no React or DOM dependency. A React layer (`/react`) is planned.
+The core has no React or DOM dependency. An optional React layer lives at `/react`.
 
 ## Install
 
@@ -19,9 +19,49 @@ The core has no React or DOM dependency. A React layer (`/react`) is planned.
 npm install @trailofdad/morphkit-calculator @trailofdad/morphkit
 ```
 
-`@trailofdad/morphkit` is a peer dependency.
+`@trailofdad/morphkit` is a peer dependency. So is `react` (18.2+), but only if you use `/react`.
 
-## Usage
+## React
+
+```tsx
+import { Calculator } from '@trailofdad/morphkit-calculator/react';
+import '@trailofdad/morphkit-calculator/styles.css'; // optional default theme
+
+export function Page() {
+  return <Calculator />; // loads the pinned dictionary, with loading and retry states
+}
+```
+
+Pass `dictionary` if you already hold one. `parentActions={(parent) => …}` adds header controls to each parent panel (e.g. "load from collection"). Children render inside the calculator's provider, so `useCalculator()` works there, e.g. to `loadGenetics('sire', animal.genetics)` from a deep link.
+
+The pieces can also be used on their own:
+
+| Export                                   | What it is                                                                       |
+| ---------------------------------------- | -------------------------------------------------------------------------------- |
+| `CalculatorProvider` / `useCalculator()` | Pairing state, results and actions for the components below it                   |
+| `useCalculatorController(dictionary)`    | The same, as a plain hook                                                        |
+| `useDictionary(options?)`                | `loading` / `ready` / `error` with `retry()`; one request per URL per page       |
+| `ParentPanel`, `Results`                 | One parent's trait input, and the results, bound to the provider                 |
+| `TraitPicker`                            | Context-free trait search + selected list; also suits an "edit animal" form      |
+| `OutcomeList`                            | Context-free list of folded outcomes, with `renderActions` / `renderCombo` hooks |
+| `MorphChip`, `GeneticsChips`             | A trait chip, and an animal's stored genetics as chips                           |
+
+### Styling
+
+Components ship unstyled. Each element carries a stable `mkc-*` class, and state appears as attributes (`data-inheritance`, `data-parent`, `data-lethal`, `data-sex`, `aria-selected`). Then either:
+
+- import `styles.css` and theme it by overriding the `--mkc-*` variables (light and dark included), or
+- skip it and pass your own classes through each component's `className` and `classNames` slots, e.g. `<TraitPicker classNames={{ input: 'h-11 rounded-xl border' }} />`.
+
+`renderZygosity` on `TraitPicker` / `ParentPanel` swaps the default radio group for your own segmented control. `renderCombo` on `OutcomeList` / `Results` wraps a combo chip, for example in your own tooltip.
+
+### Playground
+
+```bash
+npm run playground   # Vite on http://localhost:5199, running against src/
+```
+
+## Core usage
 
 ```ts
 import {
@@ -57,6 +97,7 @@ Lower-level pieces are exported too:
 - `fromLocusInputs` loads stored genetics into selections.
 - `resolveTargetGenotype` carries a grouped outcome forward as a new parent.
 - `morphTag`, `traitLabel`, `describeCombo` and `comboParts` produce labels.
+- `searchAlleles` ranks alleles for a query by name, then alias, then gene name (so "piebald" finds Pied).
 
 ### Loading the dictionary
 
@@ -69,12 +110,12 @@ npm install
 npm test           # vitest
 npm run typecheck
 npm run lint
-npm run build      # tsup → dist/ (ESM + CJS + .d.ts)
+npm run build      # tsup → dist/ (ESM + CJS + .d.ts, plus styles.css)
 ```
 
-Tests run offline against a pinned copy of the dictionary in `tests/fixtures/`.
+Tests run offline against a pinned copy of the dictionary in `tests/fixtures/`. React tests run in jsdom.
 
-Releases are tag-driven: bump `version`, commit, then push a `v*` tag. CI publishes to npm via OIDC.
+Releases are tag-driven. Bump `version` with `npm version`, then push the commit and the `v*` tag. CI stages the release on npm via trusted publishing, and a maintainer approves it with `npm stage approve <stage-id>`.
 
 ## License
 

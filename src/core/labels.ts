@@ -22,8 +22,13 @@ export type MorphTag = 'HET' | '66%' | 'SUPER';
  *   a possible carrier → `66%`.
  * - **incomplete_dominant**: one copy already shows (no tag); two is `SUPER`.
  * - **dominant / polygenic**: one copy shows and there is no super → no tag.
+ *
+ * A compound (two *different* mutants, e.g. Yellowbelly + Asphalt) is never
+ * tagged: it is one copy of each, not a Super.
  */
 export function morphTag(locus: LocusInput, inheritance: string | undefined): MorphTag | null {
+  const distinctMutants = new Set(locus.alleles.filter((a) => !isNormalAllele(a)));
+  if (distinctMutants.size > 1) return null;
   const zyg = getZygosity(locus);
   switch (inheritance) {
     case 'incomplete_dominant':

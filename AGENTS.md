@@ -7,7 +7,9 @@ The calculator layer between `@trailofdad/morphkit` (the genetics engine) and ap
 - **No genetics math here.** Punnett squares, sex linkage, combos, lethals and masking rules belong to morphkit. This package only builds engine inputs and presents engine outputs. If the maths looks wrong, fix it in morphkit.
 - **IDs, never names.** Traits are carried as dictionary `locusId` + `alleleId`. Some names are ambiguous across loci, so never resolve morph names to build a genotype.
 - **One `LocusInput` per locus.** Two alleles on one locus form a compound `[a, b]` (`selectionsToGenotype`). Never send two entries for the same locus to morphkit; the engine then computes the wrong pairing.
-- **The core stays framework-free.** `src/core` and `src/index.ts` must not import React or touch the DOM. The planned React layer goes under `src/react` with its own entry point.
+- **The core stays framework-free.** `src/core` and `src/index.ts` must not import React or touch the DOM. React lives in `src/react` (entry `/react`).
+- **React imports the core only through `../index` (or `../../index`).** The build rewrites that to the package's own name, so `dist/react.*` shares one core instance. Never import `../core/*` directly from `src/react`; that would bundle a second copy.
+- **Components ship unstyled.** Every element gets an `mkc-*` class, plus a `classNames` slot where a consumer may need to restyle it. Visual defaults go in `src/styles.css` only, via `--mkc-*` variables. Don't hard-code styles in components or depend on Tailwind or shadcn.
 - **Keep morphkit as a peer dependency** and external in `tsup.config.ts`. Never bundle it.
 - **The dictionary is pinned.** Bump `DEFAULT_DICTIONARY_VERSION` and `tests/fixtures/dictionary.v*.json` together, deliberately.
 
