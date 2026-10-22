@@ -1,5 +1,5 @@
 import type { MorphkitDictionary } from '@trailofdad/morphkit';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { ParentRole } from '../../index';
 import { CalculatorProvider, useCalculator } from '../context';
 import { cx, type ClassNames } from '../cx';
@@ -10,7 +10,7 @@ import { ParentPanel, type ParentPanelProps } from './parent-panel';
 import { Results, type ResultsProps } from './results';
 
 export type CalculatorSlot =
-  'header' | 'title' | 'description' | 'parents' | 'swap' | 'loading' | 'error';
+  'header' | 'title' | 'description' | 'parentSwitch' | 'parents' | 'swap' | 'loading' | 'error';
 
 export interface CalculatorProps extends UseCalculatorOptions {
   /** A dictionary you already hold. Omit to load the pinned release (see `dictionaryOptions`). */
@@ -105,22 +105,56 @@ function CalculatorBody({
   'dictionary' | 'dictionaryOptions' | 'initialState' | 'onChange'
 >): ReactNode {
   const { swapParents, state } = useCalculator();
+  // Narrow screens show one parent at a time (see `.mkc-parent-switch` in
+  // styles.css); wide screens ignore this and show both side by side.
+  const [active, setActive] = useState<ParentRole>('sire');
   const empty = state.sire.traits.length === 0 && state.dam.traits.length === 0;
+  const swapButton = (
+    <button
+      type="button"
+      className={cx('mkc-button', 'mkc-swap', classNames?.swap)}
+      onClick={swapParents}
+      disabled={empty}
+      aria-label="Swap sire and dam traits"
+    >
+      <SwapIcon />
+    </button>
+  );
+  const panel = (parent: ParentRole): ReactNode => (
+    <ParentPanel
+      parent={parent}
+      actions={parentActions?.(parent)}
+      {...parentProps}
+      className={cx(parentProps?.className, parent !== active && 'mkc-panel-inactive')}
+    />
+  );
+
   return (
     <div className={cx('mkc-root', 'mkc-calculator', className)}>
       <CalculatorHeader {...header} classNames={classNames} />
+      <div className={cx('mkc-parent-switch', classNames?.parentSwitch)}>
+        <div className="mkc-segmented" role="group" aria-label="Show parent">
+          {(['sire', 'dam'] as const).map((p) => (
+            <button
+              key={p}
+              type="button"
+              className="mkc-segment"
+              aria-pressed={p === active}
+              data-checked={p === active || undefined}
+              onClick={() => setActive(p)}
+            >
+              <span aria-hidden="true">{p === 'sire' ? '♂' : '♀'}</span>{' '}
+              {p === 'sire' ? 'Sire' : 'Dam'}
+              <span className="mkc-count">{state[p].traits.length}</span>
+            </button>
+          ))}
+        </div>
+        {swapButton}
+      </div>
       <div className={cx('mkc-parents', classNames?.parents)}>
-        <ParentPanel parent="sire" actions={parentActions?.('sire')} {...parentProps} />
-        <button
-          type="button"
-          className={cx('mkc-button', 'mkc-swap', classNames?.swap)}
-          onClick={swapParents}
-          disabled={empty}
-          aria-label="Swap sire and dam traits"
-        >
-          <SwapIcon />
-        </button>
-        <ParentPanel parent="dam" actions={parentActions?.('dam')} {...parentProps} />
+        {panel('sire')}
+        {swapButton}
+        {panel('dam')}
       </div>
       <Results {...resultsProps} />
       {children}

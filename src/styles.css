@@ -114,17 +114,54 @@
   align-items: start;
 }
 
+.mkc-swap {
+  justify-self: center;
+}
+
+/* Narrow screens: one parent at a time, picked with the Sire / Dam switch. */
+.mkc-parent-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mkc-parent-switch .mkc-segmented {
+  flex: 1;
+}
+
+.mkc-parent-switch .mkc-segment {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+}
+
+.mkc-count {
+  margin-left: 6px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  background: var(--mkc-surface-muted);
+  border-radius: 999px;
+}
+
+@media (max-width: 767.98px) {
+  .mkc-parents .mkc-swap,
+  .mkc-panel.mkc-panel-inactive {
+    display: none;
+  }
+}
+
+/* Wide screens: both parents side by side, swap between them. */
 @media (min-width: 768px) {
+  .mkc-parent-switch {
+    display: none;
+  }
   .mkc-parents {
     grid-template-columns: 1fr auto 1fr;
   }
   .mkc-swap {
     margin-top: 12px;
   }
-}
-
-.mkc-swap {
-  justify-self: center;
 }
 
 /* ── Panels ─────────────────────────────────────────────────────────────── */
@@ -248,59 +285,76 @@
   background: var(--mkc-surface-muted);
 }
 
+/* Selected traits: one list, rows split by dividers, one line per trait. */
 .mkc-picker-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   margin: 4px 0 0;
   padding: 0;
   list-style: none;
+  background: var(--mkc-surface);
+  border: 1px solid var(--mkc-border);
+  border-radius: var(--mkc-radius);
+  overflow: hidden;
 }
 
 .mkc-picker-item {
+  --_bar: transparent;
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  background: var(--mkc-surface);
-  border: 1px solid var(--mkc-border);
-  border-left-width: 4px;
-  border-radius: var(--mkc-radius);
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 6px 6px 12px;
+  /* A thin inset bar carries the gene's inheritance. */
+  box-shadow: inset 3px 0 0 var(--_bar);
+}
+
+.mkc-picker-item + .mkc-picker-item {
+  border-top: 1px solid var(--mkc-border);
 }
 
 .mkc-picker-item[data-inheritance='recessive'] {
-  border-left-color: var(--mkc-recessive-ink);
+  --_bar: var(--mkc-recessive-ink);
 }
 .mkc-picker-item[data-inheritance='incomplete_dominant'] {
-  border-left-color: var(--mkc-incdom-ink);
+  --_bar: var(--mkc-incdom-ink);
 }
 .mkc-picker-item[data-inheritance='dominant'] {
-  border-left-color: var(--mkc-dominant-ink);
+  --_bar: var(--mkc-dominant-ink);
 }
 
-.mkc-picker-item-body {
+.mkc-picker-item-main {
   display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  min-width: 0;
+  min-height: 40px;
 }
 
+/* Long names wrap rather than truncate: "Desert G…" can't be told apart. */
 .mkc-picker-item-name {
+  flex: 1;
+  min-width: 0;
   font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.mkc-picker-item-extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0 4px;
 }
 
 .mkc-note {
   font-size: 0.8rem;
   color: var(--mkc-text-muted);
+  white-space: nowrap;
 }
 
 /* ── Controls ───────────────────────────────────────────────────────────── */
 
 .mkc-segmented {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex: none;
   padding: 2px;
   gap: 2px;
   background: var(--mkc-surface-muted);
@@ -309,10 +363,14 @@
 }
 
 .mkc-segment {
-  padding: 4px 10px;
+  padding: 4px 9px;
+  font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
+  white-space: nowrap;
   color: var(--mkc-text-muted);
+  background: none;
+  border: none;
   border-radius: calc(var(--mkc-radius-sm) - 2px);
   cursor: pointer;
 }
@@ -496,6 +554,11 @@
   border-radius: 4px;
 }
 
+/* Market combos stand out from plain traits with an outline in the accent. */
+.mkc-chip-combo {
+  box-shadow: inset 0 0 0 1.5px var(--mkc-accent);
+}
+
 /* ── Results ────────────────────────────────────────────────────────────── */
 
 .mkc-results {
@@ -529,11 +592,12 @@
   list-style: none;
 }
 
+/* One row per phenotype: odds column on the left, chips + details on the right. */
 .mkc-outcome {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px 12px;
   background: var(--mkc-surface);
   border: 1px solid var(--mkc-border);
   border-radius: var(--mkc-radius);
@@ -543,46 +607,23 @@
   border-color: var(--mkc-danger-text);
 }
 
-.mkc-outcome-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.mkc-outcome-groups {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 24px;
-  min-width: 0;
-}
-
-.mkc-outcome-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.mkc-outcome-group-label,
-.mkc-outcome-normal {
-  font-size: 0.8rem;
-  color: var(--mkc-text-muted);
-}
-
-.mkc-outcome-normal {
-  font-weight: 600;
-}
-
 .mkc-outcome-meta {
   display: flex;
-  flex: none;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mkc-probability {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5rem;
 }
 
 .mkc-outcome-sex {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .mkc-outcome-sex[data-sex='male'] {
@@ -593,13 +634,24 @@
   color: var(--mkc-female);
 }
 
-.mkc-probability {
-  flex: none;
-  padding: 2px 10px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  background: var(--mkc-surface-muted);
-  border-radius: 999px;
+.mkc-outcome-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.mkc-outcome-normal {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--mkc-text-muted);
+}
+
+.mkc-outcome-hets {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--mkc-text-muted);
 }
 
 .mkc-badges,

@@ -31,7 +31,7 @@ describe('<Calculator>', () => {
   it('shows the idle prompt until a trait is added', () => {
     render(<Calculator dictionary={REAL_DICT} />);
     expect(screen.getByText(/Add traits to a parent/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /swap/i })).toBeDisabled();
+    expect(screen.getAllByRole('button', { name: /swap/i })[0]!).toBeDisabled();
   });
 
   it('Pastel × Spider shows a 25% Bumblebee', async () => {
@@ -70,8 +70,8 @@ describe('<Calculator>', () => {
     await user.click(within(sireZyg).getByLabelText('Het'));
     const damZyg = within(panel('dam')).getByRole('radiogroup', { name: 'Clown zygosity' });
     await user.click(within(damZyg).getByLabelText('Het'));
-    expect(outcomeRows().find((r) => r.startsWith('1 trait'))).toContain('25%');
-    expect(screen.getByText(/66% Het/)).toBeInTheDocument();
+    expect(outcomeRows().find((r) => r.includes('Clown'))).toContain('25%');
+    expect(screen.getByText('66% het Clown')).toBeInTheDocument();
   });
 
   it('pairs two alleles on one locus as a compound (Freeway)', async () => {
@@ -82,7 +82,7 @@ describe('<Calculator>', () => {
     await pick(user, 'dam', 'yellowbelly', 'Yellowbelly');
 
     const sire = within(panel('sire'));
-    expect(sire.getAllByText('Single copy (paired on this locus)')).toHaveLength(2);
+    expect(sire.getAllByText('1 copy · paired')).toHaveLength(2);
     expect(sire.queryByRole('radiogroup')).not.toBeInTheDocument();
     for (const name of ['Ivory', 'Freeway', 'Yellowbelly', 'Asphalt']) {
       expect(outcomeRows().some((r) => r.includes(name) && r.includes('25%'))).toBe(true);
@@ -101,7 +101,7 @@ describe('<Calculator>', () => {
 
     // Banana × Banana het female. Male-maker: every son is Banana or Super, so
     // only daughters can be Normal.
-    const normals = (): string[] => outcomeRows().filter((r) => r.startsWith('Normal'));
+    const normals = (): string[] => outcomeRows().filter((r) => r.includes('Normal'));
     expect(normals()).toHaveLength(1);
     expect(normals()[0]).toContain('♀ Female');
 
@@ -116,7 +116,7 @@ describe('<Calculator>', () => {
     const user = userEvent.setup();
     render(<Calculator dictionary={REAL_DICT} />);
     await pick(user, 'sire', 'pastel', 'Pastel');
-    await user.click(screen.getByRole('button', { name: /swap/i }));
+    await user.click(screen.getAllByRole('button', { name: /swap/i })[0]!);
     expect(within(panel('sire')).getByText(/No traits yet/)).toBeInTheDocument();
     expect(within(panel('dam')).getByText('Pastel')).toBeInTheDocument();
 
@@ -153,6 +153,46 @@ describe('<Calculator>', () => {
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(within(panel('sire')).getByText('Clown')).toBeInTheDocument();
     expect(within(panel('sire')).getByRole('status')).toHaveTextContent('gone_locus');
+  });
+
+  it('shows a combo and the traits it shows, side by side', async () => {
+    const user = userEvent.setup();
+    render(<Calculator dictionary={REAL_DICT} />);
+    await pick(user, 'sire', 'pastel', 'Pastel');
+    await pick(user, 'dam', 'spider', 'Spider');
+    const row = within(screen.getByRole('list', { name: 'Outcomes' }))
+      .getAllByRole('listitem')
+      .find((li) => li.textContent?.includes('Bumblebee'))!;
+    const chips = Array.from(row.querySelectorAll('.mkc-chip'), (c) => c.textContent);
+    expect(chips).toEqual(['Bumblebee', 'Pastel', 'Spider']);
+    expect(row.querySelector('.mkc-chip-combo')).toHaveTextContent('Bumblebee');
+  });
+
+  it('shows exact odds instead of whole percents', async () => {
+    const user = userEvent.setup();
+    render(<Calculator dictionary={REAL_DICT} />);
+    // Pastel × Pastel, het Clown × het Clown: Super Pastel Clown is 1/16.
+    await pick(user, 'sire', 'pastel', 'Pastel');
+    await pick(user, 'dam', 'pastel', 'Pastel');
+    await pick(user, 'sire', 'clown', 'Clown');
+    await pick(user, 'dam', 'clown', 'Clown');
+    for (const p of ['sire', 'dam'] as const) {
+      const zyg = within(panel(p)).getByRole('radiogroup', { name: 'Clown zygosity' });
+      await user.click(within(zyg).getByLabelText('Het'));
+    }
+    expect(screen.getAllByText('6.3%').length).toBeGreaterThan(0);
+    expect(screen.queryByText('6%')).toBeNull();
+  });
+
+  it('switches which parent is shown on narrow screens', async () => {
+    const user = userEvent.setup();
+    render(<Calculator dictionary={REAL_DICT} />);
+    const sireTab = screen.getByRole('button', { name: /Sire/, pressed: true });
+    expect(panel('dam')).toHaveClass('mkc-panel-inactive');
+    await user.click(screen.getByRole('button', { name: /Dam/, pressed: false }));
+    expect(sireTab).toHaveAttribute('aria-pressed', 'false');
+    expect(panel('sire')).toHaveClass('mkc-panel-inactive');
+    expect(panel('dam')).not.toHaveClass('mkc-panel-inactive');
   });
 
   it('renders per-parent header actions', () => {

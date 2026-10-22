@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   comboParts,
   describeCombo,
+  formatProbability,
   inheritanceClass,
   isHetTrait,
   morphTag,
@@ -173,5 +174,20 @@ describe('inheritanceClass', () => {
     expect(inheritanceClass('polygenic')).toBe('dominant');
     expect(inheritanceClass('recessive')).toBe('recessive');
     expect(inheritanceClass(undefined)).toBe('unknown');
+  });
+});
+
+describe('formatProbability', () => {
+  it('keeps one decimal only when it carries information', () => {
+    expect(formatProbability(0.125)).toBe('12.5%');
+    expect(formatProbability(0.25)).toBe('25%');
+    expect(formatProbability(1)).toBe('100%');
+    expect(formatProbability(0.015625)).toBe('1.6%');
+    expect(formatProbability(0.0234375)).toBe('2.3%');
+  });
+
+  it('never shows a possible outcome as 0%', () => {
+    expect(formatProbability(0.0001)).toBe('<0.1%');
+    expect(formatProbability(0)).toBe('0%');
   });
 });

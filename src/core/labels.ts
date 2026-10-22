@@ -11,6 +11,18 @@ export function possHetPercent(probability: number): number {
   return Math.floor(probability * 100);
 }
 
+/**
+ * An outcome's probability (0–1) as a percentage with up to one decimal:
+ * 0.125 → "12.5%", 0.25 → "25%", 0.015625 → "1.6%". morphkit's own
+ * `percentageProbability` rounds to whole percents, which shows 12.5% as "13%"
+ * and makes 1.6% and 2.4% both "2%". Anything under 0.05% reads "<0.1%".
+ */
+export function formatProbability(probability: number): string {
+  if (probability > 0 && probability < 0.0005) return '<0.1%';
+  const tenths = Math.round(probability * 1000);
+  return `${tenths % 10 === 0 ? tenths / 10 : (tenths / 10).toFixed(1)}%`;
+}
+
 /** The short tag shown on a morph chip. */
 export type MorphTag = 'HET' | '66%' | 'SUPER';
 

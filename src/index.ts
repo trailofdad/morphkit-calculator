@@ -22,6 +22,7 @@ export type { ZygosityOption } from './core/zygosity';
 export {
   comboParts,
   describeCombo,
+  formatProbability,
   inheritanceClass,
   isHetTrait,
   morphTag,

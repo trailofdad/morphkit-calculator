@@ -27,8 +27,9 @@ export type TraitPickerSlot =
   | 'empty'
   | 'list'
   | 'item'
+  | 'itemMain'
   | 'itemName'
-  | 'itemControls'
+  | 'itemExtra'
   | 'segmented'
   | 'select'
   | 'note'
@@ -215,7 +216,10 @@ export function TraitPicker({
               !compound &&
               onSetSexLinkage;
             const showCarrier =
-              t.zygosity === 'het50' && carrierProbabilities?.length && onSetCarrierProbability;
+              t.zygosity === 'het50' &&
+              !!carrierProbabilities &&
+              carrierProbabilities.length > 0 &&
+              onSetCarrierProbability;
             const zygLabel = `${t.name} zygosity`;
 
             return (
@@ -224,7 +228,8 @@ export function TraitPicker({
                 className={cx('mkc-picker-item', classNames?.item)}
                 data-inheritance={inheritanceClass(inheritance)}
               >
-                <div className={cx('mkc-picker-item-body', classNames?.itemControls)}>
+                {/* One line: name, zygosity, remove. Rarer controls wrap below. */}
+                <div className={cx('mkc-picker-item-main', classNames?.itemMain)}>
                   <span className={cx('mkc-picker-item-name', classNames?.itemName)}>{t.name}</span>
                   {zygOptions &&
                     (renderZygosity ? (
@@ -246,43 +251,50 @@ export function TraitPicker({
                       />
                     ))}
                   {compound && (
-                    <span className={cx('mkc-note', classNames?.note)}>
-                      Single copy (paired on this locus)
+                    <span
+                      className={cx('mkc-note', classNames?.note)}
+                      title="Two alleles of one gene: one copy of each"
+                    >
+                      1 copy · paired
                     </span>
                   )}
-                  {showCarrier && (
-                    <select
-                      aria-label={`${t.name} carrier probability`}
-                      className={cx('mkc-select', classNames?.select)}
-                      value={t.carrierProbability ?? DEFAULT_POS_HET_PROBABILITY}
-                      onChange={(e) => onSetCarrierProbability(i, Number(e.target.value))}
-                    >
-                      {carrierProbabilities.map((p) => (
-                        <option key={p} value={p}>
-                          {possHetPercent(p)}% possible het
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                  {showLinkage && (
-                    <SegmentedRadio
-                      name={`${id}-link-${i}`}
-                      label={`${t.name} sex linkage`}
-                      options={LINKAGE_OPTIONS}
-                      value={t.sexLinkage ?? 'male-maker'}
-                      onChange={(l) => onSetSexLinkage(i, l)}
-                      className={classNames?.segmented}
-                    />
-                  )}
+                  <button
+                    type="button"
+                    className={cx('mkc-icon-button', classNames?.remove)}
+                    aria-label={`Remove ${t.name}`}
+                    onClick={() => onRemove(i)}
+                  >
+                    <CloseIcon />
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className={cx('mkc-icon-button', classNames?.remove)}
-                  aria-label={`Remove ${t.name}`}
-                  onClick={() => onRemove(i)}
-                >
-                  <CloseIcon />
-                </button>
+                {(showCarrier || showLinkage) && (
+                  <div className={cx('mkc-picker-item-extra', classNames?.itemExtra)}>
+                    {showCarrier && (
+                      <select
+                        aria-label={`${t.name} carrier probability`}
+                        className={cx('mkc-select', classNames?.select)}
+                        value={t.carrierProbability ?? DEFAULT_POS_HET_PROBABILITY}
+                        onChange={(e) => onSetCarrierProbability(i, Number(e.target.value))}
+                      >
+                        {carrierProbabilities.map((p) => (
+                          <option key={p} value={p}>
+                            {possHetPercent(p)}% possible het
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    {showLinkage && (
+                      <SegmentedRadio
+                        name={`${id}-link-${i}`}
+                        label={`${t.name} sex linkage`}
+                        options={LINKAGE_OPTIONS}
+                        value={t.sexLinkage ?? 'male-maker'}
+                        onChange={(l) => onSetSexLinkage(i, l)}
+                        className={classNames?.segmented}
+                      />
+                    )}
+                  </div>
+                )}
               </li>
             );
           })}
