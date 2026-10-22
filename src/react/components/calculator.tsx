@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { ParentRole } from '../../index';
 import { CalculatorProvider, useCalculator } from '../context';
 import { cx, type ClassNames } from '../cx';
+import { SwapIcon } from './icons';
 import type { UseCalculatorOptions } from '../use-calculator';
 import { useDictionary, type UseDictionaryOptions } from '../use-dictionary';
 import { ParentPanel, type ParentPanelProps } from './parent-panel';
@@ -117,7 +118,7 @@ function CalculatorBody({
           disabled={empty}
           aria-label="Swap sire and dam traits"
         >
-          <span aria-hidden="true">⇄</span>
+          <SwapIcon />
         </button>
         <ParentPanel parent="dam" actions={parentActions?.('dam')} {...parentProps} />
       </div>

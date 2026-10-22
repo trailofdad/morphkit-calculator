@@ -16,6 +16,7 @@ import {
   type ZygosityOption,
 } from '../../index';
 import { cx, type ClassNames } from '../cx';
+import { CloseIcon } from './icons';
 
 export type TraitPickerSlot =
   | 'label'
@@ -280,7 +281,7 @@ export function TraitPicker({
                   aria-label={`Remove ${t.name}`}
                   onClick={() => onRemove(i)}
                 >
-                  <span aria-hidden="true">×</span>
+                  <CloseIcon />
                 </button>
               </li>
             );

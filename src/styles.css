@@ -366,8 +366,7 @@
   flex: none;
   width: 32px;
   height: 32px;
-  font-size: 1.25rem;
-  line-height: 1;
+  font-size: 1rem;
   color: var(--mkc-text-muted);
   background: none;
   border: none;
@@ -391,6 +390,12 @@
 
 .mkc-text-button:hover {
   color: var(--mkc-text);
+}
+
+/* Icons are 1em squares: size them with the button's font-size. */
+.mkc-icon {
+  display: block;
+  flex: none;
 }
 
 .mkc-visually-hidden {
