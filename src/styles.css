@@ -642,6 +642,24 @@
   padding-top: 2px;
 }
 
+/* Traits fill the left; market combos sit in their own group on the right. */
+.mkc-outcome-phenotype {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mkc-outcome-phenotype > .mkc-chips:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.mkc-outcome-combos {
+  flex: none;
+  justify-content: flex-end;
+  max-width: 50%;
+}
+
 .mkc-outcome-normal {
   font-size: 0.9rem;
   font-weight: 600;

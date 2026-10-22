@@ -12,6 +12,7 @@ export type OutcomeListSlot =
   | 'sex'
   | 'body'
   | 'chips'
+  | 'combos'
   | 'hets'
   | 'badges'
   | 'lethal'
@@ -67,9 +68,9 @@ function splitPhenotype(
 
 /**
  * Folded pairing outcomes, one compact row each: the exact probability (and
- * offspring sex when sex-linked) on the left; then the market combos it makes
- * (composition in the combo's tooltip) and every trait it shows; possible hets
- * as one line; lethal / birth-defect warnings.
+ * offspring sex when sex-linked) on the left; then every trait it shows, with
+ * the market combos it makes on the right (composition in the combo's
+ * tooltip); possible hets as one line; lethal / birth-defect warnings.
  */
 export function OutcomeList({
   outcomes,
@@ -111,21 +112,28 @@ export function OutcomeList({
               {o.phenotypeNames.length === 0 ? (
                 <span className="mkc-outcome-normal">Normal</span>
               ) : (
-                // Market combos first (their make-up is in the tooltip), then every trait shown.
-                <div className={cx('mkc-chips', classNames?.chips)}>
-                  {combos.map(({ name, description }) => {
-                    const chip = (
-                      <MorphChip label={name} title={description} className="mkc-chip-combo" />
-                    );
-                    return (
-                      <span key={name} className="mkc-combo">
-                        {renderCombo ? renderCombo({ name, description, chip }) : chip}
-                      </span>
-                    );
-                  })}
-                  {traits.map((name) => (
-                    <MorphChip key={name} label={name} />
-                  ))}
+                // Every trait shown on the left; market combos (make-up in the
+                // tooltip) in their own group on the right.
+                <div className="mkc-outcome-phenotype">
+                  <div className={cx('mkc-chips', classNames?.chips)}>
+                    {traits.map((name) => (
+                      <MorphChip key={name} label={name} />
+                    ))}
+                  </div>
+                  {combos.length > 0 && (
+                    <div className={cx('mkc-chips', 'mkc-outcome-combos', classNames?.combos)}>
+                      {combos.map(({ name, description }) => {
+                        const chip = (
+                          <MorphChip label={name} title={description} className="mkc-chip-combo" />
+                        );
+                        return (
+                          <span key={name} className="mkc-combo">
+                            {renderCombo ? renderCombo({ name, description, chip }) : chip}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -164,7 +164,8 @@ describe('<Calculator>', () => {
       .getAllByRole('listitem')
       .find((li) => li.textContent?.includes('Bumblebee'))!;
     const chips = Array.from(row.querySelectorAll('.mkc-chip'), (c) => c.textContent);
-    expect(chips).toEqual(['Bumblebee', 'Pastel', 'Spider']);
+    expect(chips).toEqual(['Pastel', 'Spider', 'Bumblebee']);
+    expect(row.querySelector('.mkc-outcome-combos')).toHaveTextContent('Bumblebee');
     expect(row.querySelector('.mkc-chip-combo')).toHaveTextContent('Bumblebee');
   });
 
