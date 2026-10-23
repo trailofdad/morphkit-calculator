@@ -6,7 +6,7 @@ import { createDictionaryIndex } from '@trailofdad/morphkit';
  * pinned release (rather than the repo's `main` branch) means a dictionary edit
  * never changes results until the consumer opts in.
  */
-export const DEFAULT_DICTIONARY_VERSION = '4.0.0';
+export const DEFAULT_DICTIONARY_VERSION = '4.1.0';
 
 /** jsDelivr URL for a tagged morphkit-dictionary release. */
 export function dictionaryUrl(version: string = DEFAULT_DICTIONARY_VERSION): string {
@@ -29,7 +29,7 @@ export class DictionaryLoadError extends Error {
 export interface LoadDictionaryOptions {
   /** Full URL; overrides `version`. */
   url?: string;
-  /** morphkit-dictionary release, e.g. `"4.0.0"`. Defaults to {@link DEFAULT_DICTIONARY_VERSION}. */
+  /** morphkit-dictionary release, e.g. `"4.1.0"`. Defaults to {@link DEFAULT_DICTIONARY_VERSION}. */
   version?: string;
   /** Injected for tests or non-browser runtimes. Defaults to the global `fetch`. */
   fetch?: typeof fetch;

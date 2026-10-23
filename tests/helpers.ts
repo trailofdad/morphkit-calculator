@@ -1,9 +1,9 @@
 import type { MorphkitDictionary } from '@trailofdad/morphkit';
 import type { ParentState, SelectionTrait } from '../src';
-import realDictionary from './fixtures/dictionary.v4.0.0.json';
+import realDictionary from './fixtures/dictionary.v4.1.0.json';
 
 /**
- * The real morphkit-dictionary v4.0.0, pinned so results never change under the
+ * The real morphkit-dictionary v4.1.0, pinned so results never change under the
  * tests. Refresh deliberately alongside DEFAULT_DICTIONARY_VERSION.
  */
 export const REAL_DICT = realDictionary as unknown as MorphkitDictionary;
